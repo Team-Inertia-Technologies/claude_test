@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens ──────────────────────────────────────────── */
+:root {
+  --navy:   #0B2545;
+  --teal:   #14818A;
+  --gold:   #C9A035;
+  --steel:  #F4F6F9;
+  --mid:    #D0D8E4;
+  --dark:   #1A2333;
+  --body:   #3A4556;
+  --muted:  #7A8A9A;
+  --white:  #FFFFFF;
+}
+
+/* ── Base ───────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-inter text-body antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-playfair text-dark;
+  }
+}
+
+/* ── Utilities ──────────────────────────────────────────────── */
+@layer utilities {
+  /* Blueprint grid overlay — place on a relative navy container */
+  .blueprint-overlay {
+    @apply absolute inset-0 pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cdefs%3E%3Cpattern id='s' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M20 0L0 0 0 20' fill='none' stroke='white' stroke-width='0.4'/%3E%3C/pattern%3E%3Cpattern id='g' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Crect width='100' height='100' fill='url(%23s)'/%3E%3Cpath d='M100 0L0 0 0 100' fill='none' stroke='white' stroke-width='0.8'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+  }
+}
