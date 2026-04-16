@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoChat — Geographer AI Assistant</title>
+
+  <!-- Leaflet map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<!-- ====== SIDEBAR ====== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">🌍</span>
+      <span class="logo-text">GeoChat</span>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#9776;</button>
+  </div>
+
+  <button class="new-chat-btn" id="newChatBtn">
+    <span>＋</span> New Conversation
+  </button>
+
+  <nav class="quick-topics">
+    <p class="section-label">Quick Topics</p>
+
+    <button class="topic-btn" data-prompt="Explain the major tectonic plates and their boundaries. Include the names and coordinates of key plate boundaries.">
+      <span class="topic-icon">🏔️</span> Tectonic Plates
+    </button>
+    <button class="topic-btn" data-prompt="Describe the world's major climate zones using the Köppen classification system, with examples of regions for each type.">
+      <span class="topic-icon">🌡️</span> Climate Zones
+    </button>
+    <button class="topic-btn" data-prompt="Tell me about the world's major ocean currents — their names, locations, and how they influence global climate.">
+      <span class="topic-icon">🌊</span> Ocean Currents
+    </button>
+    <button class="topic-btn" data-prompt="What are the world's largest rivers by length and by discharge? Include their coordinates and key facts.">
+      <span class="topic-icon">🏞️</span> Major Rivers
+    </button>
+    <button class="topic-btn" data-prompt="Describe the major mountain ranges of the world, including their highest peaks, coordinates, and geological formation.">
+      <span class="topic-icon">⛰️</span> Mountain Ranges
+    </button>
+    <button class="topic-btn" data-prompt="Explain the concept of biomes — list and describe the major terrestrial biomes with their locations and characteristics.">
+      <span class="topic-icon">🌿</span> World Biomes
+    </button>
+    <button class="topic-btn" data-prompt="Describe the world's major desert regions — their locations, areas, climate, and unique geographical features.">
+      <span class="topic-icon">🏜️</span> Desert Regions
+    </button>
+    <button class="topic-btn" data-prompt="Explain plate tectonics and volcanic activity. Where are the major volcanic hotspots in the world? Include their coordinates.">
+      <span class="topic-icon">🌋</span> Volcanoes
+    </button>
+    <button class="topic-btn" data-prompt="What are the most significant impacts of climate change on global geography — sea level rise, glacier retreat, desertification, and shifting biomes?">
+      <span class="topic-icon">♻️</span> Climate Change
+    </button>
+    <button class="topic-btn" data-prompt="Explain map projections — what are the most common types (Mercator, Robinson, Peters, etc.) and what distortions does each introduce?">
+      <span class="topic-icon">🗺️</span> Map Projections
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="api-status" id="apiStatus">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Checking connection...</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ====== MAIN CONTENT ====== -->
+<main class="main" id="main">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button class="topbar-toggle" id="topbarToggle" title="Toggle sidebar">&#9776;</button>
+    <div class="topbar-title">
+      <span class="logo-icon">🌍</span>
+      <span>GeoChat</span>
+      <span class="topbar-subtitle">Geographer AI Assistant</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="map-toggle-btn" id="mapToggleBtn" title="Toggle map panel">
+        🗺️ Map
+      </button>
+    </div>
+  </header>
+
+  <!-- Content area: chat + optional map -->
+  <div class="content-area" id="contentArea">
+
+    <!-- Chat panel -->
+    <div class="chat-panel" id="chatPanel">
+
+      <!-- Welcome screen (shown when no messages) -->
+      <div class="welcome" id="welcome">
+        <div class="welcome-globe">🌍</div>
+        <h1 class="welcome-title">Welcome to GeoChat</h1>
+        <p class="welcome-sub">Your AI-powered geography assistant. Ask about countries, climate, terrain, rivers, oceans, maps, and more.</p>
+
+        <div class="welcome-examples">
+          <p class="examples-label">Try asking:</p>
+          <div class="example-grid">
+            <button class="example-card" data-prompt="What are the geographical characteristics of the Amazon Basin? Include its coordinates and key facts.">
+              🌿 Amazon Basin geography and ecosystem
+            </button>
+            <button class="example-card" data-prompt="Compare the geographical features of the Sahara Desert and the Arabian Desert.">
+              🏜️ Sahara vs Arabian Desert comparison
+            </button>
+            <button class="example-card" data-prompt="Explain how the Himalayas were formed and their impact on Asian climate and weather patterns. Include the coordinates of the highest peaks.">
+              ⛰️ How were the Himalayas formed?
+            </button>
+            <button class="example-card" data-prompt="What are the world's major ocean currents and how do they affect global climate?">
+              🌊 Ocean currents and climate
+            </button>
+            <button class="example-card" data-prompt="Tell me about the geography of Iceland — its volcanic activity, glaciers, and location.">
+              🌋 Iceland's unique geography
+            </button>
+            <button class="example-card" data-prompt="What is the difference between weather and climate? Explain climate zones with examples.">
+              🌡️ Weather vs climate zones
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat messages -->
+      <div class="messages" id="messages"></div>
+
+      <!-- Input area -->
+      <div class="input-area">
+        <div class="input-wrapper">
+          <textarea
+            id="userInput"
+            class="user-input"
+            placeholder="Ask about geography, climate, terrain, countries, maps..."
+            rows="1"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" title="Send message">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint">GeoBot uses Claude AI. Coordinates mentioned in responses will appear on the map.</p>
+      </div>
+    </div>
+
+    <!-- Map panel -->
+    <div class="map-panel hidden" id="mapPanel">
+      <div class="map-header">
+        <span>📍 Location Map</span>
+        <button class="map-close-btn" id="mapCloseBtn">✕</button>
+      </div>
+      <div id="map"></div>
+      <div class="map-locations" id="mapLocations">
+        <p class="map-locations-label">Pinned Locations</p>
+        <div id="locationList"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
