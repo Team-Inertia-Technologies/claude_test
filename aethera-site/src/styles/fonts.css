@@ -1,0 +1,6 @@
+/* Google Fonts imported in index.css before tailwindcss to satisfy CSS spec */
+
+:root {
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
